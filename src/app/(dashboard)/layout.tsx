@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import Logo from "@/components/shared/Logo";
 
 const dashboardLinks = [
   { href: "/dashboard", label: "Overview" },
@@ -34,17 +35,15 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
               </label>
             </div>
             <div className="flex-1">
-              <Link className="text-base font-semibold sm:text-lg" href="/dashboard">
-                Event Era
-              </Link>
+              <Logo />
             </div>
             <div className="badge badge-primary badge-outline badge-sm sm:badge-md">
               Dashboard
             </div>
           </div>
 
-          <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6">
-            <main className="rounded-box border border-base-300 bg-base-100 p-4 shadow-sm sm:p-5 lg:p-6">
+          <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-2 lg:px-4 py-3 lg:py-6">
+            <main className="rounded-box border border-base-300 bg-base-100 p-3 shadow-sm lg:p-6">
               {children}
             </main>
           </div>
@@ -58,9 +57,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           ></label>
           <aside className="min-h-full w-72 border-r border-base-300 bg-base-100 p-4 shadow-xl lg:w-64 lg:shadow-none">
             <div className="mb-6">
-              <Link className="text-lg font-semibold" href="/">
-                Event Era
-              </Link>
+              <Logo />
               <p className="mt-1 text-sm text-base-content/60">
                 Manage your dashboard from any screen size.
               </p>

@@ -80,7 +80,7 @@ const RegisterForm = () => {
         className="absolute -top-20 -left-20 cursor-pointer"
         onClick={() => router.back()}
       >
-        Back
+       ⬅️ Back
       </button>
       <form onSubmit={handleSubmit(handleRegister)} className="space-y-2">
         <div>

@@ -1,10 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Logo from "./Logo";
 import Link from "next/link";
+import { useAuth } from "@/providers/AuthProvider";
 
 const Navbar = () => {
-  const [hasUser, setHasUser] = useState<boolean>(true);
+  const { user, logout } = useAuth();
   return (
     <nav>
       <div className="navbar bg-base-100 shadow-sm">
@@ -69,14 +70,17 @@ const Navbar = () => {
             </li>
           </ul>
         </div>
-        <div className="navbar-end">
-          {hasUser ? (
-            <button className="btn btn-primary">Logout</button>
+        <div className="navbar-end gap-2">
+          {user ? (
+            <>
+              <span className="text-sm hidden sm:inline">{user?.name}</span>
+              <button onClick={logout} className="btn btn-primary">Logout</button>
+            </>
           ) : (
-              <Link href={`login`}>
-                <button className="btn btn-primary">Login</button>
-              </Link>
-            )}
+            <Link href={`/login`}>
+              <button className="btn btn-primary">Login</button>
+            </Link>
+          )}
         </div>
       </div>
     </nav>

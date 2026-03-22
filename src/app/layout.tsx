@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   description: "Event platform application",
 };
 
+import { AuthProvider } from "@/providers/AuthProvider";
+
+import { Toaster } from "react-hot-toast";
+
 export default function RootLayout({
   children,
 }: {
@@ -28,7 +32,10 @@ export default function RootLayout({
       lang="en"
       className={`${poppins.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <AuthProvider>{children}</AuthProvider>
+        <Toaster position="bottom-right" reverseOrder={false} />
+      </body>
     </html>
   );
 }

@@ -1,62 +1,59 @@
 "use client";
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useAuth } from '@/providers/AuthProvider';
+import toast from 'react-hot-toast';
 
 type Inputs = {
   email: string;
   password: string;
-}
+};
 
 const LoginForm = () => {
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const router = useRouter();
-
+  const { login } = useAuth();
   const { register, handleSubmit, formState: { errors } } = useForm<Inputs>();
 
   const handleLogin = async (data: Inputs): Promise<void> => {
-    const { email, password } = data;
     try {
       setIsLoggingIn(true);
-      const response = await fetch("http://localhost:5000/api/v1/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Login failed");
-      }
+      await login(data);
+      toast.success("Login successful!");
+      router.push("/");
     } catch (err: any) {
-      console.error("Login error:", err.message);
+      console.error("Login error:", err);
+      toast.error(err.message || "Login failed. Please check your credentials.");
     } finally {
       setIsLoggingIn(false);
     }
-  }
+  };
 
   return (
-    <div className='relative'>
+    <div className="relative">
       <button
         type="button"
         className="absolute -top-20 -left-20 cursor-pointer"
         onClick={() => router.back()}
       >
-       ⬅️ Back
+        ⬅️ Back
       </button>
-      <form onSubmit={handleSubmit(handleLogin)} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
         <div>
           <label className="label font-semibold" htmlFor="email">
             Email
           </label>
           <input
-            className="input mt-0.5"
+            className="input mt-1"
             placeholder="Your Email"
             type="email"
             id="email"
-            {...register("email", { required: true })}
+            {...register("email", { required: "Email is required" })}
           />
           {errors.email && (
-            <p className="mt-px text-sm">Email field is required</p>
+            <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
           )}
         </div>
         <div>
@@ -64,25 +61,35 @@ const LoginForm = () => {
             Password
           </label>
           <input
-            className="input mt-0.5"
+            className="input mt-1"
             placeholder="Your Password"
             type="password"
             id="password"
-            {...register("password", { required: true })}
+            {...register("password", { required: "Password is required" })}
           />
           {errors.password && (
-            <p className="mt-px text-sm">Password field is required</p>
+            <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
           )}
         </div>
-        <div className="mt-4">
-          <input
+        <div className="mt-6">
+          <button
             className="btn btn-primary w-full"
             type="submit"
-            value={isLoggingIn ? "Logging in..." : "Login"}
             disabled={isLoggingIn}
-          />
+          >
+            {isLoggingIn ? "Logging in..." : "Login"}
+          </button>
         </div>
       </form>
+      <p className="text-sm text-muted-foreground mt-4 text-center">
+        Don&apos;t have an account?{" "}
+        <Link
+          href={`/register`}
+          className="text-primary hover:underline"
+        >
+          Register
+        </Link>
+      </p>
     </div>
   );
 };

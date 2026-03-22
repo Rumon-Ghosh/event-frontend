@@ -4,6 +4,9 @@ import uploadImage from "@/utils/uploadImage";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import Link from "next/link";
+import { useAuth } from "@/providers/AuthProvider";
+import toast from "react-hot-toast";
 
 type Inputs = {
   name: string;
@@ -14,8 +17,8 @@ type Inputs = {
 
 const RegisterForm = () => {
   const [isRegistering, setIsRegistering] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
   const router = useRouter();
+  const { registerUser } = useAuth();
 
   const {
     register,
@@ -28,19 +31,17 @@ const RegisterForm = () => {
     const imageFile = image?.[0];
 
     if (!imageFile) {
-      setErrorMsg("Image is required");
+      toast.error("Image is required");
       return;
     }
 
     try {
       setIsRegistering(true);
-      setErrorMsg("");
 
       // 1. Upload image to get URL
       const uploadedImageUrl = await uploadImage(imageFile);
       if (!uploadedImageUrl) {
-        setErrorMsg("Failed to upload image. Please try again.");
-        setIsRegistering(false);
+        toast.error("Failed to upload image. Please try again.");
         return;
       }
 
@@ -52,22 +53,12 @@ const RegisterForm = () => {
         image: uploadedImageUrl,
       };
 
-      const response = await fetch("http://localhost:5000/api/v1/users/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(registerData),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        // Redirect to login or home
-        router.push("/"); // adjust based on your app's routes
-      } else {
-        setErrorMsg(result.message || "Registration failed");
-      }
+      await registerUser(registerData);
+      toast.success("Registration successful!");
+      router.push("/");
     } catch (err: any) {
-      setErrorMsg(err.message || "An unexpected error occurred");
+      console.error("Registration error:", err);
+      toast.error(err.message || "An unexpected error occurred during registration");
     } finally {
       setIsRegistering(false);
     }
@@ -82,8 +73,8 @@ const RegisterForm = () => {
       >
        ⬅️ Back
       </button>
-      <form onSubmit={handleSubmit(handleRegister)} className="space-y-2">
-        <div>
+      <form onSubmit={handleSubmit(handleRegister)} className="space-y-4">
+        <div className="flex flex-col items-center sm:items-start">
           <label className="label font-semibold" htmlFor="file">
             Upload Image
           </label>
@@ -103,35 +94,36 @@ const RegisterForm = () => {
             type="file"
             id="file"
             accept="image/*"
-            {...register("image", { required: true })}
+            {...register("image", { required: "Image is required" })}
           />
+          {errors.image && <p className="mt-1 text-sm text-red-500">{errors.image.message}</p>}
         </div>
         <div>
           <label className="label font-semibold" htmlFor="name">
             Name
           </label>
           <input
-            className="input mt-0.5"
+            className="input mt-1"
             placeholder="Your Name"
             type="text"
             id="name"
-            {...register("name", { required: true })}
+            {...register("name", { required: "Name is required" })}
           />
-          {errors.name && <p className="mt-px text-sm">Name field is required</p>}
+          {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>}
         </div>
         <div>
           <label className="label font-semibold" htmlFor="email">
             Email
           </label>
           <input
-            className="input mt-0.5"
+            className="input mt-1"
             placeholder="Your Email"
             type="email"
             id="email"
-            {...register("email", { required: true })}
+            {...register("email", { required: "Email is required" })}
           />
           {errors.email && (
-            <p className="mt-px text-sm">Email field is required</p>
+            <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
           )}
         </div>
         <div>
@@ -139,26 +131,38 @@ const RegisterForm = () => {
             Password
           </label>
           <input
-            className="input mt-0.5"
+            className="input mt-1"
             placeholder="Your Password"
             type="password"
             id="password"
-            {...register("password", { required: true })}
+            {...register("password", { 
+              required: "Password is required", 
+              minLength: { value: 6, message: "Password must be at least 6 characters" } 
+            })}
           />
           {errors.password && (
-            <p className="mt-px text-sm">Password field is required</p>
+            <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
           )}
         </div>
-        <div className="mt-4">
-          {errorMsg && <p className="mb-2 text-sm text-red-500">{errorMsg}</p>}
-          <input
+        <div className="mt-6">
+          <button
             className="btn btn-primary w-full"
             type="submit"
-            value={isRegistering ? "Registering..." : "Register"}
             disabled={isRegistering}
-          />
+          >
+            {isRegistering ? "Registering..." : "Register"}
+          </button>
         </div>
       </form>
+      <p className="text-sm text-muted-foreground mt-4 text-center">
+        Already have an account?{" "}
+        <Link
+          href={`/login`}
+          className="text-primary hover:underline"
+        >
+          Login
+        </Link>
+      </p>
     </div>
   );
 };

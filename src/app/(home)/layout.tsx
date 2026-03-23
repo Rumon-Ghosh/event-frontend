@@ -1,7 +1,16 @@
+import Navbar from "@/components/shared/Navbar";
+import React from "react";
+
 export default function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="flex min-h-screen flex-col">{children}</div>;
+  return (
+    <>
+      <Navbar />
+      {children}
+      {/* Footer can go here later */}
+    </>
+  );
 }

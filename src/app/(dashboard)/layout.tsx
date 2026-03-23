@@ -1,9 +1,10 @@
-import Link from "next/link";
 import React from "react";
 import Logo from "@/components/shared/Logo";
+import NavLink from "@/components/shared/NavLink";
 
 const dashboardLinks = [
   { href: "/dashboard", label: "Overview" },
+  { href: "/dashboard/create-event", label: "Create Event" },
 ];
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
@@ -69,7 +70,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             <ul className="menu w-full gap-1 rounded-box bg-base-100 p-0">
               {dashboardLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href}>{link.label}</Link>
+                  <NavLink href={link.href}>{link.label}</NavLink>
                 </li>
               ))}
             </ul>

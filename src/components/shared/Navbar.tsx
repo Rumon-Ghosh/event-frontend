@@ -3,9 +3,11 @@ import React from "react";
 import Logo from "./Logo";
 import Link from "next/link";
 import { useAuth } from "@/providers/AuthProvider";
+import NavLink from "./NavLink";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+
   return (
     <nav>
       <div className="navbar bg-base-100 shadow-sm">
@@ -29,12 +31,31 @@ const Navbar = () => {
               </svg>
             </div>
             <ul
-              tabIndex={ -1 }
+              tabIndex={-1}
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
             >
               <li>
-                <a>Item 1</a>
+                <NavLink href="/">Home</NavLink>
               </li>
+              <li>
+                <NavLink href="/explore">Explore</NavLink>
+              </li>
+              <li>
+                <NavLink href="/about">About</NavLink>
+              </li>
+              <li>
+                <NavLink href="/blog">Blog</NavLink>
+              </li>
+              <li>
+                <NavLink href="/contact">Contact</NavLink>
+              </li>
+              {user && (
+                <>
+                  <li>
+                    <NavLink href="/dashboard">Dashboard</NavLink>
+                  </li>
+                </>
+              )}
               <li>
                 <a>Parent</a>
                 <ul className="p-2">
@@ -53,8 +74,27 @@ const Navbar = () => {
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
             <li>
-              <a>Item 1</a>
+              <NavLink href="/">Home</NavLink>
             </li>
+            <li>
+              <NavLink href="/explore">Explore</NavLink>
+            </li>
+            <li>
+              <NavLink href="/about">About</NavLink>
+            </li>
+            <li>
+              <NavLink href="/blog">Blog</NavLink>
+            </li>
+            <li>
+              <NavLink href="/contact">Contact</NavLink>
+            </li>
+            {user && (
+              <>
+                <li>
+                  <NavLink href="/dashboard">Dashboard</NavLink>
+                </li>
+              </>
+            )}
             <li>
               <details>
                 <summary>Parent</summary>
@@ -73,8 +113,12 @@ const Navbar = () => {
         <div className="navbar-end gap-2">
           {user ? (
             <>
-              <span className="text-sm hidden sm:inline">{user?.name}</span>
-              <button onClick={logout} className="btn btn-primary">Logout</button>
+              <span className="text-sm hidden sm:inline font-bold">
+                {user?.name}
+              </span>
+              <button onClick={logout} className="btn btn-primary">
+                Logout
+              </button>
             </>
           ) : (
             <Link href={`/login`}>

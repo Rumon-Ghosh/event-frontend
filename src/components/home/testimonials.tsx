@@ -50,7 +50,15 @@ const testimonialData = [
 
 const Testimonials = () => {
   return (
-    <section className="w-11/12 mx-auto">
+    <section className="w-11/12 mx-auto my-10 lg:my-16">
+      {/* Custom Styles for Same Height Cards */}
+      <style jsx global>{`
+        .testimonials-swiper .swiper-slide {
+          height: auto !important;
+          display: flex !important;
+        }
+      `}</style>
+
       {/* Header Section */}
       <div className="text-center mb-8 lg:mb-12 space-y-4">
         <h2 className="text-3xl lg:text-5xl font-extrabold text-white tracking-tight">
@@ -81,11 +89,11 @@ const Testimonials = () => {
             768: { slidesPerView: 2 },
             1024: { slidesPerView: 3 },
           }}
-          className="pb-14"
+          className="pb-14 testimonials-swiper"
         >
           {testimonialData.map((item) => (
             <SwiperSlide key={item.id}>
-              <div className="group h-full bg-gray-900/40 border border-white/5 p-8 rounded-3xl backdrop-blur-md flex flex-col justify-between transition-all duration-300 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2">
+              <div className="group w-full bg-gray-900/40 border border-white/5 p-8 rounded-3xl backdrop-blur-md flex flex-col justify-between transition-all duration-300 hover:border-primary/30 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2">
                 {/* Quote Icon */}
                 <div className="mb-6">
                   <svg className="w-10 h-10 text-primary opacity-40" fill="currentColor" viewBox="0 0 32 32">
@@ -94,12 +102,12 @@ const Testimonials = () => {
                 </div>
 
                 {/* Testimonial Text */}
-                <p className="text-slate-300 italic text-lg leading-relaxed mb-8 grow">
+                <p className="text-slate-300 italic text-lg leading-relaxed mb-4 grow">
                   {item.quote}
                 </p>
 
                 {/* Rating */}
-                <div className="flex gap-1 mb-6">
+                <div className="flex gap-1 mb-3 mt-auto">
                   {[...Array(5)].map((_, i) => (
                     <svg
                       key={i}
@@ -114,7 +122,7 @@ const Testimonials = () => {
 
                 {/* User Info */}
                 <div className="flex items-center gap-4">
-                  <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-primary/20 group-hover:border-primary/60 transition-colors">
+                  <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-primary/20 group-hover:border-primary/60 transition-colors shrink-0">
                     <Image
                       src={item.image}
                       alt={item.name}

@@ -81,6 +81,7 @@ const Banner = () => {
               className="object-cover transition-transform duration-700 group-hover:scale-110"
               priority
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
             />
             <div className="absolute inset-0 bg-linear-to-t from-gray-900/80 via-transparent to-transparent"></div>
           </div>

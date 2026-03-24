@@ -69,6 +69,7 @@ const Newsletter = () => {
                   src={img}
                   alt={`Newsletter image ${index + 1}`}
                   fill
+                  sizes="(max-width: 768px) 33vw, (max-width: 1200px) 15vw, 150px"
                   className="object-cover transition-transform duration-700 hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-primary/10 opacity-0 hover:opacity-100 transition-opacity"></div>

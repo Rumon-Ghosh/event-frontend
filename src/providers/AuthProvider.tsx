@@ -36,8 +36,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } else {
         setUser(null);
       }
-    } catch (error) {
-      console.error("Critical error fetching user:", error);
+    } catch (error: any) {
+      if (error.message === 'Network Error') {
+        console.warn("Backend server is unreachable. Please check if the server is running on port 5000.");
+      } else {
+        console.error("Critical error fetching user:", error);
+      }
       setUser(null);
     } finally {
       setLoading(false);

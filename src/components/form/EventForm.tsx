@@ -1,7 +1,7 @@
 "use client";
 import { useAuth } from "@/providers/AuthProvider";
 import React, { useState } from "react";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
@@ -67,7 +67,6 @@ const EventForm = () => {
         image: uploadedImageUrl,
         date: date,
         createdBy: user?._id || user?.id,
-        status: "pending",
       };
 
       const res = await axiosSecure.post("/events", payload);
@@ -249,18 +248,6 @@ const EventForm = () => {
                 )}
               </div>
             </div>
-          </div>
-
-          {/* Hidden/Automatic Note */}
-          <div className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/10 rounded-2xl">
-            <FaCalendarAlt className="text-primary text-xl shrink-0" />
-            <p className="text-xs text-primary/70 font-medium leading-relaxed">
-              As per policy, the{" "}
-              <span className="font-extrabold text-primary">Event Date</span> is
-              set to today and{" "}
-              <span className="font-extrabold text-primary">Status</span> is
-              marked as pending review.
-            </p>
           </div>
 
           {/* Submit Button */}

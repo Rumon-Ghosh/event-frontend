@@ -5,13 +5,19 @@ import NavLink from "@/components/shared/NavLink";
 const dashboardLinks = [
   { href: "/dashboard", label: "Overview" },
   { href: "/dashboard/create-event", label: "Create Event" },
+  { href: "/dashboard/my-orders", label: "My Orders" },
+  { href: "/dashboard/my-events", label: "My Events" },
 ];
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen bg-base-200">
       <div className="drawer lg:drawer-open">
-        <input id="dashboard-drawer" type="checkbox" className="drawer-toggle" />
+        <input
+          id="dashboard-drawer"
+          type="checkbox"
+          className="drawer-toggle"
+        />
         <div className="drawer-content flex min-h-screen flex-col">
           <div className="navbar border-b border-base-300 bg-base-100 px-3 shadow-sm sm:px-4 lg:px-6">
             <div className="flex items-center gap-2 lg:hidden">

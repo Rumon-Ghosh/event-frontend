@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import heroImg from "@/assets/event-hero.jpg"; // Re-using for design continuity
+import Link from "next/link";
 
 const AboutPage = () => {
   return (
@@ -111,9 +112,11 @@ const AboutPage = () => {
              <span className="text-primary">Next Moment</span> Happen?
           </h2>
           <div className="relative flex flex-wrap justify-center gap-6">
-            <button className="btn btn-primary btn-lg rounded-full px-12 shadow-xl shadow-primary/20 hover:scale-105 transition-transform">
+            <Link
+              href="/explore"
+              className="btn btn-primary btn-lg rounded-full px-12 shadow-xl shadow-primary/20 hover:scale-105 transition-transform">
               Explore Events
-            </button>
+            </Link>
             <button className="btn btn-outline btn-lg rounded-full px-12 text-white border-white/30 hover:bg-white/10 hover:border-white">
               Host an Event
             </button>

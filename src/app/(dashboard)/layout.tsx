@@ -7,6 +7,7 @@ const dashboardLinks = [
   { href: "/dashboard/create-event", label: "Create Event" },
   { href: "/dashboard/my-orders", label: "My Orders" },
   { href: "/dashboard/my-events", label: "My Events" },
+  { href: "/dashboard/manage-users", label: "Manage Users" },
 ];
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {

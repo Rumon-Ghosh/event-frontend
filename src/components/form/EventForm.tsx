@@ -7,13 +7,13 @@ import { toast } from "react-hot-toast";
 import Image from "next/image";
 import {
   FaCloudUploadAlt,
-  FaCalendarAlt,
   FaMapMarkerAlt,
   FaDollarSign,
   FaUsers,
 } from "react-icons/fa";
 import uploadImage from "@/utils/uploadImage";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface EventFormData {
   title: string;
@@ -22,7 +22,7 @@ interface EventFormData {
   price: number;
   capacity: number;
   date: Date;
-  image:  FileList;
+  image: FileList;
 }
 
 const EventForm = () => {
@@ -50,7 +50,6 @@ const EventForm = () => {
     }
     setLoading(true);
     try {
-
       const uploadedImageUrl = await uploadImage(imageFile);
       setPreview(uploadedImageUrl); // Set preview to show the uploaded image
       if (!uploadedImageUrl) {
@@ -82,6 +81,21 @@ const EventForm = () => {
       setLoading(false);
     }
   };
+
+
+  if (user?.isActive === false) {
+    return (
+      <div className="flex flex-col gap-2 justify-center items-center">
+        <h2 className="text-2xl leading-relaxed text-center">
+          Admin have deactived your account that&apos;s why you cannot create an
+          event!
+        </h2>
+        <Link className="btn" href="/">
+          Home
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-2xl mx-auto p-4 lg:p-10 bg-gray-900/60 border border-white/10 rounded-[2.5rem] shadow-2xl backdrop-blur-xl relative overflow-hidden group">

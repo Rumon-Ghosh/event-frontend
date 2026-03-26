@@ -8,6 +8,7 @@ interface User {
   _id: string;
   name: string;
   email: string;
+  isActive: boolean;
   role: string;
   [key: string]: any;
 }

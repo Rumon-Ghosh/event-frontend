@@ -76,6 +76,7 @@ const ExploreEvent = () => {
                     src={event.image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800'} 
                     alt={event.title} 
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 50vw"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                   />
                   <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-bold text-teal-600 shadow-sm">

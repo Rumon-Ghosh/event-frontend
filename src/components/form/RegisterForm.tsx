@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 type Inputs = {
   name: string;
   email: string;
+  role: "user" | "organizer";
   password: string;
   image: FileList;
 };
@@ -24,10 +25,14 @@ const RegisterForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({
+    defaultValues: {
+      role: "" as "user" | "organizer",
+    },
+  });
 
   const handleRegister = async (data: Inputs): Promise<void> => {
-    const { name, email, password, image } = data;
+    const { name, email, role, password, image } = data;
     const imageFile = image?.[0];
 
     if (!imageFile) {
@@ -49,6 +54,7 @@ const RegisterForm = () => {
       const registerData = {
         name,
         email,
+        role,
         password,
         image: uploadedImageUrl,
       };
@@ -58,7 +64,9 @@ const RegisterForm = () => {
       router.push("/");
     } catch (err: any) {
       console.error("Registration error:", err);
-      toast.error(err.message || "An unexpected error occurred during registration");
+      toast.error(
+        err.message || "An unexpected error occurred during registration",
+      );
     } finally {
       setIsRegistering(false);
     }
@@ -71,7 +79,7 @@ const RegisterForm = () => {
         className="absolute -top-20 -left-20 cursor-pointer"
         onClick={() => router.back()}
       >
-       ⬅️ Back
+        ⬅️ Back
       </button>
       <form onSubmit={handleSubmit(handleRegister)} className="space-y-4">
         <div className="flex flex-col items-center sm:items-start">
@@ -96,7 +104,9 @@ const RegisterForm = () => {
             accept="image/*"
             {...register("image", { required: "Image is required" })}
           />
-          {errors.image && <p className="mt-1 text-sm text-red-500">{errors.image.message}</p>}
+          {errors.image && (
+            <p className="mt-1 text-sm text-red-500">{errors.image.message}</p>
+          )}
         </div>
         <div>
           <label className="label font-semibold" htmlFor="name">
@@ -109,7 +119,9 @@ const RegisterForm = () => {
             id="name"
             {...register("name", { required: "Name is required" })}
           />
-          {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>}
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+          )}
         </div>
         <div>
           <label className="label font-semibold" htmlFor="email">
@@ -127,6 +139,26 @@ const RegisterForm = () => {
           )}
         </div>
         <div>
+          <label className="label font-semibold" htmlFor="role">
+            Select Role
+          </label>
+          <select
+            className="select mt-1"
+            id="role"
+            {...register("role", { required: "Role is required" })}
+            defaultValue=""
+          >
+            <option value="" disabled>
+              Choose a role
+            </option>
+            <option value="user">User</option>
+            <option value="organizer">Organizer</option>
+          </select>
+          {errors.role && (
+            <p className="mt-1 text-sm text-red-500">{errors.role.message}</p>
+          )}
+        </div>
+        <div>
           <label className="label font-semibold" htmlFor="password">
             Password
           </label>
@@ -135,13 +167,18 @@ const RegisterForm = () => {
             placeholder="Your Password"
             type="password"
             id="password"
-            {...register("password", { 
-              required: "Password is required", 
-              minLength: { value: 6, message: "Password must be at least 6 characters" } 
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
             })}
           />
           {errors.password && (
-            <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
+            <p className="mt-1 text-sm text-red-500">
+              {errors.password.message}
+            </p>
           )}
         </div>
         <div className="mt-6">
@@ -156,10 +193,7 @@ const RegisterForm = () => {
       </form>
       <p className="text-sm text-muted-foreground mt-4 text-center">
         Already have an account?{" "}
-        <Link
-          href={`/login`}
-          className="text-primary hover:underline"
-        >
+        <Link href={`/login`} className="text-primary hover:underline">
           Login
         </Link>
       </p>

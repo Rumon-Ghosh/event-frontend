@@ -3,7 +3,7 @@
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { TOrders } from "@/types/Orders";
 import { useEffect, useState } from "react";
-import { set } from "react-hook-form";
+import Swal from "sweetalert2";
 
 const Orders = () => {
   const axiosSecure = useAxiosSecure();
@@ -12,15 +12,23 @@ const Orders = () => {
   const [error, setError] = useState<string | null>(null);
   const [refresh, setRefresh] = useState(false);
 
+  const getErrorMessage = (error: unknown) => {
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    return "Unknown error";
+  };
+
   useEffect(() => {
     const ordersFunc = async () => {
       try {
         setLoading(true);
         const res = await axiosSecure.get("/orders/my-orders");
         setMyOrders(res.data.data);
-      } catch (err: any) {
+      } catch (error: unknown) {
         setError("My Orders Cannot Fetch.");
-        console.log("Error on fetching my orders", err.message);
+        console.log("Error on fetching my orders", getErrorMessage(error));
       } finally {
         setLoading(false);
       }
@@ -29,14 +37,26 @@ const Orders = () => {
   }, [refresh, axiosSecure]);
 
   const handleDeleteOrder = async (orderId: string) => {
+    const result = await Swal.fire({
+      title: "Delete this order?",
+      text: "This order record will be removed.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#dc2626",
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
     try {
       await axiosSecure.delete(`/orders/${orderId}`);
-      setRefresh((prev) => !prev); // Trigger a refresh to re-fetch orders
-      // Remove the deleted order from the state
-      setMyOrders(myOrders.filter((order) => order._id !== orderId));
-    } catch (err: any) {
+      setRefresh((prev) => !prev); 
+    } catch (error: unknown) {
       setError("Failed to delete order.");
-      console.log("Error on deleting order", err.message);
+      console.log("Error on deleting order", getErrorMessage(error));
     }
   };
 

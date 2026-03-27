@@ -3,6 +3,7 @@ import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { TUser } from "@/types/User";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 const UsersManage = () => {
   const axiosSecure = useAxiosSecure();
@@ -13,6 +14,14 @@ const UsersManage = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isStatusUpdating, setIsStatusUpdating] = useState<boolean>(false);
 
+  const getErrorMessage = (error: unknown) => {
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    return "Unknown error";
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
@@ -21,9 +30,9 @@ const UsersManage = () => {
         if (res.data.success) {
           setAllUsers(res.data.data);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         setError("Error on fetching users.");
-        console.log("Error fetch user:", error.message);
+        console.log("Error fetch user:", getErrorMessage(error));
       } finally {
         setLoading(false);
       }
@@ -32,32 +41,60 @@ const UsersManage = () => {
   }, [axiosSecure, refetch]);
 
   const handleToggleUserStatus = async (user: TUser) => {
+    const result = await Swal.fire({
+      title: `${user.isActive ? "Deactivate" : "Activate"} this user?`,
+      text: `${user.name}'s access will be ${user.isActive ? "disabled" : "enabled"}.`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: `Yes, ${user.isActive ? "deactivate" : "activate"}`,
+      cancelButtonText: "Cancel",
+      confirmButtonColor: user.isActive ? "#f59e0b" : "#16a34a",
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
     setIsStatusUpdating(true);
     try {
       const res = await axiosSecure.patch(`/users/${user._id}`, { isActive: !user?.isActive });
       if (res.data.success) {
-        setRefetch(!refetch);
+        setRefetch((prev) => !prev);
         toast.success(res.data.message);
       }
-    } catch (err: any) {
+    } catch (error: unknown) {
       setError("Error on changing user status.");
-      console.log(err.message)
+      console.log(getErrorMessage(error))
     } finally {
       setIsStatusUpdating(false);
     }
   }
 
   const handleDeleteUser = async (user: TUser) => {
+    const result = await Swal.fire({
+      title: "Delete this user?",
+      text: `${user.name} will be permanently removed.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#dc2626",
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
     setIsDeleting(true);
     try {
       const res = await axiosSecure.delete(`/users/${user._id}`);
       if (res.data.success) {
-        setRefetch(!refetch);
+        setRefetch((prev) => !prev);
         toast.success(res.data.message);
       }
-    } catch (err: any) {
+    } catch (error: unknown) {
       setError("Error on deleting user.");
-      console.log(err.message)
+      console.log(getErrorMessage(error))
     } finally {
       setIsDeleting(false);
     }

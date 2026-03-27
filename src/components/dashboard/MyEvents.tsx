@@ -4,6 +4,7 @@ import { TEvent } from "@/types/Event";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 type TEventForm = {
   title: string;
@@ -30,6 +31,14 @@ const MyEvents = () => {
     price: "",
     capacity: "",
   });
+
+  const getErrorMessage = (error: unknown) => {
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    return "Unknown error";
+  };
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-BD", {
@@ -65,6 +74,21 @@ const MyEvents = () => {
 
   const handleUpdateSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    const result = await Swal.fire({
+      title: "Update this event?",
+      text: "Your event details will be changed.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, update it",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#0d9488",
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
     try {
       const res = await axiosSecure.patch(`/events/${selectedEventId}`, formData)
       if (res.data) {
@@ -72,23 +96,37 @@ const MyEvents = () => {
         setRefresh(!refresh)
         updateRef.current?.close();
       }
-    } catch (err: any) {
+    } catch (error: unknown) {
       setError("Error on updating Event!")
-      console.log(err.message)
+      console.log(getErrorMessage(error))
     }
   };
 
 
-  const handleDeleteEvent = async (id: string) => {
+  const handleDeleteEvent = async (id: string, title: string) => {
+    const result = await Swal.fire({
+      title: "Delete this event?",
+      text: `"${title}" will be permanently removed.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#dc2626",
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
     try {
       const res = await axiosSecure.delete(`/events/${id}`);
       if (res.data.success) {
         toast.success("Event Deleted Successfully.")
         setRefresh(!refresh)
       }
-    } catch (err: any) {
+    } catch (error: unknown) {
       setError("Error on deleting Event.")
-      console.log("Error on deleting event", err)
+      console.log("Error on deleting event", getErrorMessage(error))
     }
   }
 
@@ -98,9 +136,9 @@ const MyEvents = () => {
         setLoading(true);
         const res = await axiosSecure.get(`/events/my-events`) ;
         setEvent(res.data.data);
-      } catch (err: any) {
+      } catch (error: unknown) {
         setError("Failed to fetch My-Events");
-        console.log(err.message);
+        console.log(getErrorMessage(error));
       } finally {
         setLoading(false);
       }
@@ -189,7 +227,7 @@ const MyEvents = () => {
                         Update
                       </button>
                       <button
-                        onClick={() => handleDeleteEvent(event._id)}
+                        onClick={() => handleDeleteEvent(event._id, event.title)}
                         type="button" className="btn btn-sm btn-error">
                         Delete
                       </button>

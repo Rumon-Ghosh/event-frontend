@@ -9,7 +9,7 @@ const Navbar = () => {
   const { user, logout } = useAuth();
 
   return (
-    <nav>
+    <nav className="sticky top-0 z-50">
       <div className="navbar bg-base-100 shadow-sm">
         <div className="navbar-start">
           <div className="dropdown">
@@ -52,21 +52,18 @@ const Navbar = () => {
               {user && (
                 <>
                   <li>
-                    <NavLink href="/dashboard">Dashboard</NavLink>
+                    <a>Dashboard</a>
+                    <ul className="p-2">
+                      <li>
+                        <NavLink href="/dashboard">Dashboard</NavLink>
+                      </li>
+                      <li>
+                        <NavLink href="/dashboard/profile">Profile</NavLink>
+                      </li>
+                    </ul>
                   </li>
                 </>
               )}
-              <li>
-                <a>Parent</a>
-                <ul className="p-2">
-                  <li>
-                    <a>Submenu 1</a>
-                  </li>
-                  <li>
-                    <a>Submenu 2</a>
-                  </li>
-                </ul>
-              </li>
             </ul>
           </div>
           <Logo></Logo>
@@ -91,23 +88,20 @@ const Navbar = () => {
             {user && (
               <>
                 <li>
-                  <NavLink href="/dashboard">Dashboard</NavLink>
+                  <details>
+                    <summary>Dashboard</summary>
+                    <ul className="p-2 bg-base-100 w-40 z-1">
+                      <li>
+                        <NavLink href="/dashboard">Dashboard</NavLink>
+                      </li>
+                      <li>
+                        <NavLink href="/dashboard/profile">Profile</NavLink>
+                      </li>
+                    </ul>
+                  </details>
                 </li>
               </>
             )}
-            <li>
-              <details>
-                <summary>Parent</summary>
-                <ul className="p-2 bg-base-100 w-40 z-1">
-                  <li>
-                    <a>Submenu 1</a>
-                  </li>
-                  <li>
-                    <a>Submenu 2</a>
-                  </li>
-                </ul>
-              </details>
-            </li>
           </ul>
         </div>
         <div className="navbar-end gap-2">

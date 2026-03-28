@@ -1,15 +1,16 @@
 import React from "react";
 import Logo from "@/components/shared/Logo";
-import NavLink from "@/components/shared/NavLink";
+// import NavLink from "@/components/shared/NavLink";
+import DashBoardLinks from "@/components/dashboard/DashBoardLinks";
 
-const dashboardLinks = [
-  { href: "/dashboard", label: "Overview" },
-  { href: "/dashboard/create-event", label: "Create Event" },
-  { href: "/dashboard/my-orders", label: "My Orders" },
-  { href: "/dashboard/my-events", label: "My Events" },
-  { href: "/dashboard/manage-users", label: "Manage Users" },
-  { href: "/dashboard/profile", label: "Profile" },
-];
+// const dashboardLinks = [
+//   { href: "/dashboard", label: "Overview" },
+//   { href: "/dashboard/create-event", label: "Create Event" },
+//   { href: "/dashboard/my-orders", label: "My Orders" },
+//   { href: "/dashboard/my-events", label: "My Events" },
+//   { href: "/dashboard/manage-users", label: "Manage Users" },
+//   { href: "/dashboard/profile", label: "Profile" },
+// ];
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -76,11 +77,12 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
               Navigation
             </p>
             <ul className="menu w-full gap-1 rounded-box bg-base-100 p-0">
-              {dashboardLinks.map((link) => (
+              {/* {dashboardLinks.map((link) => (
                 <li key={link.href}>
                   <NavLink href={link.href}>{link.label}</NavLink>
                 </li>
-              ))}
+              ))} */}
+              <DashBoardLinks></DashBoardLinks>
             </ul>
           </aside>
         </div>

@@ -8,7 +8,6 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { FaCircleUser } from "react-icons/fa6";
-import Swal from "sweetalert2";
 
 type UpdateInput = {
   name: string;
@@ -16,7 +15,7 @@ type UpdateInput = {
 };
 
 const MyProfile = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, refetchUser } = useAuth();
   const [error, setError] = useState<string>("");
   const [updateLoading, setUpdateLoading] = useState<boolean>(false);
   const updateButtonRef = useRef<HTMLDialogElement | null>(null);
@@ -41,28 +40,15 @@ const MyProfile = () => {
   };
 
   const handleUpdateProfile = async (data: UpdateInput) => {
-    const result = await Swal.fire({
-      title: "Delete this order?",
-      text: "This order record will be removed.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it",
-      cancelButtonText: "Cancel",
-      confirmButtonColor: "#dc2626",
-    });
-
-    if (!result.isConfirmed) {
-      return;
-    }
     const { name, image } = data;
     const imageFile = image?.[0];
     if (!imageFile) {
       toast.error("Image is required");
       return;
     }
-    setUpdateLoading(true);
-    updateButtonRef?.current.close();
+    updateButtonRef.current?.close();
     try {
+      setUpdateLoading(true);
       const uploadedImageUrl = await uploadImage(imageFile);
       if (!uploadedImageUrl) {
         toast.error("Failed to upload image. Please try again.");
@@ -71,14 +57,18 @@ const MyProfile = () => {
 
       const res = await axiosSecure.patch(`/users/${user?._id}`, {
         name,
-        uploadedImageUrl,
+        image: uploadedImageUrl,
       });
       if (res.data.success) {
+        await refetchUser();
         toast.success("Profile updated successfully.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError("Error on updating profile");
-      console.log(err.message);
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to update profile.";
+      console.log(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setUpdateLoading(false);
     }
@@ -140,7 +130,7 @@ const MyProfile = () => {
             <div className="avatar mb-4">
               <div className="w-32 rounded-full ring ring-primary/20 ring-offset-4 ring-offset-base-100">
                 <Image
-                  src={user.image}
+                  src={user?.image}
                   alt={user.name}
                   width={160}
                   height={160}

@@ -1,11 +1,7 @@
-import React from 'react';
+import Analytics from "@/components/dashboard/Analytics";
 
 const DashboardHome = () => {
-  return (
-    <div>
-      <h2>Dashboard Home</h2>
-    </div>
-  );
+  return <Analytics />;
 };
 
-export default DashboardHome;
+export default DashboardHome;

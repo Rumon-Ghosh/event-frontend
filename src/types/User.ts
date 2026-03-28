@@ -2,7 +2,7 @@ export interface TUser {
   _id: string;
   name: string;
   email: string;
-  role: "admin" | "manager" | "user";
+  role: "admin" | "organizer" | "user";
   isActive: boolean;
   image: string;
   createdAt?: string;

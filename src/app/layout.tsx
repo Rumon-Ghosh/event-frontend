@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Event Platform",
+  title: "EventEra |Event Platform",
   description: "Event platform application",
 };
 

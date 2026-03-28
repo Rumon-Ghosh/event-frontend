@@ -75,20 +75,6 @@ const MyEvents = () => {
   const handleUpdateSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const result = await Swal.fire({
-      title: "Update this event?",
-      text: "Your event details will be changed.",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, update it",
-      cancelButtonText: "Cancel",
-      confirmButtonColor: "#0d9488",
-    });
-
-    if (!result.isConfirmed) {
-      return;
-    }
-
     try {
       const res = await axiosSecure.patch(`/events/${selectedEventId}`, formData)
       if (res.data) {
@@ -207,9 +193,6 @@ const MyEvents = () => {
                       </div>
                       <div>
                         <div className="font-semibold">{event.title}</div>
-                        <div className="max-w-xs text-xs text-base-content/70">
-                          {event.description}
-                        </div>
                       </div>
                     </div>
                   </td>

@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa6";
 import { MdOutlineLocationOn, MdOutlinePhone, MdOutlineEmail } from "react-icons/md";
 import { FiArrowRight } from "react-icons/fi";
-import { FaHeart } from "react-icons/fa";
+import Logo from "../shared/Logo";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const navLinks = [
@@ -46,7 +46,7 @@ const contactDetails = [
   },
   {
     icon: <MdOutlineEmail className="text-lg shrink-0" />,
-    text: "hello@eventsphere.io",
+    text: "hello@eventera.com",
   },
 ];
 
@@ -71,9 +71,7 @@ const Footer = () => {
             {/* Column 1 — Brand + Social */}
             <div className="lg:col-span-1 space-y-6">
               <div>
-                <h2 className="text-2xl font-extrabold tracking-tight text-white">
-                  Event<span className="text-[#5f9598]">Sphere</span>
-                </h2>
+                <Logo></Logo>
                 <p className="mt-3 text-sm text-slate-400 leading-relaxed">
                   Discover, create, and experience unforgettable events. Your
                   premier destination for everything happening around you.
@@ -171,8 +169,8 @@ const Footer = () => {
           <div className="my-8 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" />
 
           {/* Bottom bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-xs text-slate-500 text-center sm:text-left">
+          <div className="flex flex-col items-center justify-between gap-3">
+            <p className="text-lg text-slate-500 text-center">
               &copy; {currentYear}{" "}
               <span className="text-[#5f9598] font-medium">EventEra</span>. All
               rights reserved.

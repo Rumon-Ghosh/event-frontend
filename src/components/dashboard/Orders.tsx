@@ -2,7 +2,7 @@
 
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { TOrders } from "@/types/Orders";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
 
 const Orders = () => {
@@ -11,6 +11,9 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refresh, setRefresh] = useState(false);
+  const updateQuantityRef = useRef<HTMLDialogElement | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<TOrders | null>(null);
+  const [quantity, setQuantity] = useState<number>(0);
 
   const getErrorMessage = (error: unknown) => {
     if (error instanceof Error) {
@@ -53,12 +56,39 @@ const Orders = () => {
 
     try {
       await axiosSecure.delete(`/orders/${orderId}`);
-      setRefresh((prev) => !prev); 
+      setRefresh((prev) => !prev);
     } catch (error: unknown) {
       setError("Failed to delete order.");
       console.log("Error on deleting order", getErrorMessage(error));
     }
   };
+
+  const openUpdateModal = (order: TOrders) => {
+    setSelectedOrder(order);
+    setQuantity(order.quantity); // Set the current quantity in the state
+    updateQuantityRef.current?.showModal();
+  }
+
+  const handleUpdateQuantity = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await axiosSecure.put(`/orders/${selectedOrder?._id}/quantity`, { quantity });
+      
+      Swal.fire({
+        icon: "success",
+        title: "Updated!",
+        text: "Quantity has been updated successfully.",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      setRefresh((prev) => !prev);
+      updateQuantityRef.current?.close();
+    } catch (error: unknown) {
+      setError("Failed to update order.");
+      console.log("Error on updating order", getErrorMessage(error));
+    }
+  }
 
 
   if (error)
@@ -80,7 +110,7 @@ const Orders = () => {
   return <div>
     <h2 className="text-2xl font-semibold mb-4">My Orders</h2>
     {myOrders.length === 0 ? (
-      <p className="text-gray-500">You have no orders yet.</p>  
+      <p className="text-gray-500">You have no orders yet.</p>
     ) : (
       <div className="space-y-4">
         {myOrders.map((order) => (
@@ -92,14 +122,44 @@ const Orders = () => {
             </div>
             <div className="space-y-2">
               <p className="text-gray-500">Total: ${order.totalPrice.toFixed(2)}</p>
-              <button
-                onClick={() => handleDeleteOrder(order._id)}
-                className="btn btn-primary">Delete</button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => openUpdateModal(order)}
+                  className="btn btn-secondary">Update Quantity</button>
+                <button
+                  onClick={() => handleDeleteOrder(order._id)}
+                  className="btn btn-primary">Delete</button>
+              </div>
             </div>
           </div>
         ))}
       </div>
     )}
+    {/* Open the modal using document.getElementById('ID').showModal() method */}
+    {/* <button className="btn" onClick={() => document.getElementById('my_modal_5').showModal()}>open modal</button> */}
+    <dialog id="my_modal_5" ref={updateQuantityRef} className="modal modal-bottom sm:modal-middle">
+      <div className="modal-box">
+        <form onSubmit={handleUpdateQuantity}>
+          <label className="label" htmlFor="quantity">Quantity</label>
+          <br />
+          <input 
+            className="input mt-2"
+            type="number"
+            value={quantity} 
+            onChange={(e) => setQuantity(Number(e.target.value))} 
+            id="quantity" 
+          />
+          <br />
+          <button className="btn mt-2" type="submit">Update</button>
+        </form>
+        <div className="modal-action">
+          <form method="dialog">
+            {/* if there is a button in form, it will close the modal */}
+            <button className="btn">Cancel</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
   </div>;
 };
 

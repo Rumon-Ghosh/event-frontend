@@ -13,6 +13,7 @@ export interface TOrders {
   };
   quantity: number;
   totalPrice: number;
+  orderStatus: string;
   createdAt?: string;
   updatedAt?: string;
   __v?: number;

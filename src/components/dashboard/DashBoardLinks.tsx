@@ -32,6 +32,9 @@ const DashBoardLinks = () => {
           <li>
             <NavLink href="/dashboard/manage-users">Manage Users</NavLink>
           </li>
+          <li>
+            <NavLink href="/dashboard/manage-orders">Manage Orders</NavLink>
+          </li>
         </>
       )}
       <li>

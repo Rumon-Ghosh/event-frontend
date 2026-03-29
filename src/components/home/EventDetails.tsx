@@ -90,7 +90,7 @@ const EventDetails = ({ id }: { id: string }) => {
       const res = await axiosSecure.post("/orders", payload);
       if (res.data.success) {
         toast.success("Event booked successfully!");
-        router.push("/")
+        router.push("/dashboard/my-orders")
       }
     } catch (err: any) {
       console.error("Error booking event:", err);

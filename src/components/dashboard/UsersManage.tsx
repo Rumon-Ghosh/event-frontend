@@ -13,6 +13,10 @@ const UsersManage = () => {
   const [refetch, setRefetch] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isStatusUpdating, setIsStatusUpdating] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
 
   const getErrorMessage = (error: unknown) => {
     if (error instanceof Error) {
@@ -26,9 +30,11 @@ const UsersManage = () => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const res = await axiosSecure.get("/users");
+        const res = await axiosSecure.get(`/users?page=${currentPage}&limit=${limit}`);
         if (res.data.success) {
           setAllUsers(res.data.data);
+          setTotalPages(res.data.totalPages);
+          setTotalUsers(res.data.totalUsers)
         }
       } catch (error: unknown) {
         setError("Error on fetching users.");
@@ -38,7 +44,7 @@ const UsersManage = () => {
       }
     };
     fetchUsers();
-  }, [axiosSecure, refetch]);
+  }, [axiosSecure, refetch, currentPage]);
 
   const handleToggleUserStatus = async (user: TUser) => {
     const result = await Swal.fire({
@@ -98,7 +104,9 @@ const UsersManage = () => {
     } finally {
       setIsDeleting(false);
     }
-  } 
+  }
+
+  console.log({ totalUsers, allUsers, totalPages })
 
   if (error)
     return (
@@ -121,7 +129,7 @@ const UsersManage = () => {
       <div className="mb-4">
         <h2 className="text-2xl font-semibold mb-2">Manage Users</h2>
         <p className="text-sm text-base-content/70">
-          Total users: {allUsers.length}
+          Total users: {totalUsers}
         </p>
       </div>
 
@@ -147,7 +155,7 @@ const UsersManage = () => {
 
                 return (
                   <tr key={user._id}>
-                    <th>{index + 1}</th>
+                    <th>{(currentPage - 1) * limit + index + 1}</th>
                     <td>
                       <div>
                         <div className="font-semibold">{user.name}</div>
@@ -196,6 +204,30 @@ const UsersManage = () => {
               })}
             </tbody>
           </table>
+        </div>
+      )}
+      {/* Pagination UI */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-12">
+          <div className="join shadow-sm">
+            <button
+              className="join-item btn btn-outline btn-sm md:btn-md"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            >
+              « Prev
+            </button>
+            <button className="join-item btn btn-outline btn-sm md:btn-md no-animation cursor-default">
+              Page {currentPage} of {totalPages}
+            </button>
+            <button
+              className="join-item btn btn-outline btn-sm md:btn-md"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            >
+              Next »
+            </button>
+          </div>
         </div>
       )}
     </div>

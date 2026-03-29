@@ -8,13 +8,19 @@ import Swal from "sweetalert2";
 const ManageOrders = () => {
   const [orders, setOrders] = useState<TOrders[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
+  const [totalOrders, setTotalOrders] = useState<number>(0);
   const axiosSecure = useAxiosSecure();
 
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await axiosSecure.get("/orders");
+      const response = await axiosSecure.get(`/orders?page=${currentPage}&limit=${limit}`);
       setOrders(response.data.data);
+      setTotalPages(response.data.totalPages);
+      setTotalOrders(response.data.totalOrders);
     } catch (error) {
       console.log("Error fetching orders:", error);
     } finally {
@@ -24,7 +30,7 @@ const ManageOrders = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [currentPage, limit]);
 
   const handleStatusUpdate = async (id: string, status: string) => {
     try {
@@ -67,7 +73,7 @@ const ManageOrders = () => {
           </p>
         </div>
         <div className="badge badge-primary font-semibold py-3 px-4">
-          Total Orders: {orders.length}
+          Total Orders: {totalOrders}
         </div>
       </div>
 
@@ -113,13 +119,12 @@ const ManageOrders = () => {
                   </td>
                   <td>
                     <div
-                      className={`badge badge-sm font-semibold capitalize ${
-                        order.orderStatus === "confirmed"
+                      className={`badge badge-sm font-semibold capitalize ${order.orderStatus === "confirmed"
                           ? "badge-success text-white"
                           : order.orderStatus === "cancelled"
-                          ? "badge-error text-white"
-                          : "badge-warning text-white"
-                      }`}
+                            ? "badge-error text-white"
+                            : "badge-warning text-white"
+                        }`}
                     >
                       {order.orderStatus}
                     </div>
@@ -159,6 +164,30 @@ const ManageOrders = () => {
           </tbody>
         </table>
       </div>
+      {/* Pagination UI */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-12">
+          <div className="join shadow-sm">
+            <button
+              className="join-item btn btn-outline btn-sm md:btn-md"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            >
+              « Prev
+            </button>
+            <button className="join-item btn btn-outline btn-sm md:btn-md no-animation cursor-default">
+              Page {currentPage} of {totalPages}
+            </button>
+            <button
+              className="join-item btn btn-outline btn-sm md:btn-md"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            >
+              Next »
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

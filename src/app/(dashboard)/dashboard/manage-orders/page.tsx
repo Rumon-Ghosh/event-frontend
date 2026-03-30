@@ -3,7 +3,7 @@ import ManageOrders from "@/components/dashboard/manageOrders";
 function ManageOrdersPage() {
   return (
     <div>
-      <ManageOrders />
+      <ManageOrders></ManageOrders>
     </div>
   );
 }

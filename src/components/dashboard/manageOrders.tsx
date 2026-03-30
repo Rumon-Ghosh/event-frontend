@@ -2,38 +2,58 @@
 
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import { TOrders } from "@/types/Orders";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 const ManageOrders = () => {
   const [orders, setOrders] = useState<TOrders[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
   const [totalOrders, setTotalOrders] = useState<number>(0);
+  const [isStatusUpdating, setIsStatusUpdating] = useState(false);
   const axiosSecure = useAxiosSecure();
 
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosSecure.get(`/orders?page=${currentPage}&limit=${limit}`);
-      setOrders(response.data.data);
-      setTotalPages(response.data.totalPages);
-      setTotalOrders(response.data.totalOrders);
-    } catch (error) {
-      console.log("Error fetching orders:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchOrders = useCallback(
+    async (signal?: AbortSignal) => {
+      try {
+        setLoading(true);
+        const response = await axiosSecure.get(
+          `/orders?page=${currentPage}&limit=${limit}`,
+          {
+            signal,
+          },
+        );
+        setOrders(response.data.data);
+        setTotalPages(response.data.totalPages);
+        setTotalOrders(response.data.totalOrders);
+        setError("");
+      } catch (error: any) {
+        if (error.name === "CanceledError" || error.name === "AbortError") {
+          return;
+        }
+        console.log("Error fetching orders:", error);
+        setError("Failed to fetch orders.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [axiosSecure, currentPage, limit],
+  );
 
   useEffect(() => {
-    fetchOrders();
-  }, [currentPage, limit]);
+    const controller = new AbortController();
+    fetchOrders(controller.signal);
+    return () => {
+      controller.abort();
+    };
+  }, [fetchOrders]);
 
   const handleStatusUpdate = async (id: string, status: string) => {
     try {
+      setIsStatusUpdating(true);
       const response = await axiosSecure.put(`/orders/${id}/status`, {
         orderStatus: status,
       });
@@ -44,7 +64,7 @@ const ManageOrders = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-        fetchOrders(); // Refresh the list
+        fetchOrders(); // Now successfully calls the stable fetchOrders
       }
     } catch (error: any) {
       Swal.fire({
@@ -52,8 +72,20 @@ const ManageOrders = () => {
         title: "Update failed",
         text: error.response?.data?.message || "Something went wrong",
       });
+    } finally {
+      setIsStatusUpdating(false);
     }
   };
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="bg-red-50 text-red-500 px-6 py-4 rounded-lg shadow-sm">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -77,11 +109,12 @@ const ManageOrders = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="overflow-x-auto rounded-xl shadow-sm border border-gray-100">
         <table className="table table-zebra w-full">
           {/* head */}
-          <thead className="bg-gray-50 text-gray-700 uppercase text-xs font-semibold">
+          <thead className="text-gray-300 uppercase text-xs font-semibold">
             <tr>
+              <th>#</th>
               <th>User</th>
               <th>Event</th>
               <th>Quantity</th>
@@ -92,11 +125,12 @@ const ManageOrders = () => {
           </thead>
           <tbody>
             {orders.length > 0 ? (
-              orders.map((order) => (
-                <tr key={order._id} className="hover:bg-gray-50">
+              orders.map((order, index) => (
+                <tr key={order._id} className="">
+                  <td>{(currentPage - 1) * limit + index + 1}</td>
                   <td>
                     <div className="flex flex-col">
-                      <span className="font-semibold text-gray-700">
+                      <span className="font-semibold text-gray-400">
                         {(order.user as any)?.name || "N/A"}
                       </span>
                       <span className="text-xs text-gray-400">
@@ -105,7 +139,7 @@ const ManageOrders = () => {
                     </div>
                   </td>
                   <td>
-                    <span className="font-medium text-gray-700">
+                    <span className="font-medium text-gray-400">
                       {order.event?.title || "N/A"}
                     </span>
                   </td>
@@ -114,17 +148,18 @@ const ManageOrders = () => {
                       {order.quantity}
                     </span>
                   </td>
-                  <td className="font-bold text-gray-800">
+                  <td className="font-bold text-gray-300">
                     ${order.totalPrice.toFixed(2)}
                   </td>
                   <td>
                     <div
-                      className={`badge badge-sm font-semibold capitalize ${order.orderStatus === "confirmed"
-                          ? "badge-success text-white"
+                      className={`badge badge-sm font-semibold capitalize ${
+                        order.orderStatus === "confirmed"
+                          ? "badge-success"
                           : order.orderStatus === "cancelled"
-                            ? "badge-error text-white"
-                            : "badge-warning text-white"
-                        }`}
+                            ? "badge-error"
+                            : "badge-warning"
+                      }`}
                     >
                       {order.orderStatus}
                     </div>
@@ -134,21 +169,29 @@ const ManageOrders = () => {
                       {order.orderStatus === "pending" && (
                         <>
                           <button
-                            onClick={() => handleStatusUpdate(order._id, "confirmed")}
-                            className="btn btn-xs btn-success text-white"
+                            onClick={() =>
+                              handleStatusUpdate(order._id, "confirmed")
+                            }
+                            disabled={isStatusUpdating}
+                            className="btn btn-xs btn-success"
                           >
-                            Approve
+                            {isStatusUpdating ? "..." : "Approve"}
                           </button>
                           <button
-                            onClick={() => handleStatusUpdate(order._id, "cancelled")}
+                            onClick={() =>
+                              handleStatusUpdate(order._id, "cancelled")
+                            }
+                            disabled={isStatusUpdating}
                             className="btn btn-xs btn-error text-white"
                           >
-                            Cancel
+                            {isStatusUpdating ? "..." : "Cancel"}
                           </button>
                         </>
                       )}
                       {order.orderStatus !== "pending" && (
-                        <span className="text-xs text-gray-400 italic">No Actions</span>
+                        <span className="text-xs text-gray-300 italic">
+                          No Actions
+                        </span>
                       )}
                     </div>
                   </td>
@@ -156,7 +199,7 @@ const ManageOrders = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="text-center py-10 text-gray-500">
+                <td colSpan={6} className="text-center py-10 text-gray-300">
                   No orders found in the database.
                 </td>
               </tr>

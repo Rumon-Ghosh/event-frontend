@@ -27,16 +27,23 @@ const UsersManage = () => {
   };
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const res = await axiosSecure.get(`/users?page=${currentPage}&limit=${limit}`);
+        const res = await axiosSecure.get(`/users?page=${currentPage}&limit=${limit}`, {
+          signal: controller.signal,
+        });
         if (res.data.success) {
           setAllUsers(res.data.data);
           setTotalPages(res.data.totalPages);
-          setTotalUsers(res.data.totalUsers)
+          setTotalUsers(res.data.totalUsers);
         }
-      } catch (error: unknown) {
+      } catch (error: any) {
+        if (error.name === "AbortError" || error.name === "CanceledError") {
+          return;
+        }
         setError("Error on fetching users.");
         console.log("Error fetch user:", getErrorMessage(error));
       } finally {
@@ -44,7 +51,11 @@ const UsersManage = () => {
       }
     };
     fetchUsers();
-  }, [axiosSecure, refetch, currentPage]);
+
+    return () => {
+      controller.abort();
+    };
+  }, [axiosSecure, refetch, currentPage, limit]);
 
   const handleToggleUserStatus = async (user: TUser) => {
     const result = await Swal.fire({
@@ -105,8 +116,6 @@ const UsersManage = () => {
       setIsDeleting(false);
     }
   }
-
-  console.log({ totalUsers, allUsers, totalPages })
 
   if (error)
     return (

@@ -1,9 +1,9 @@
 "use client";
 
+import React, { useState } from "react";
 import uploadImage from "@/utils/uploadImage";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/providers/AuthProvider";
 import toast from "react-hot-toast";
@@ -21,15 +21,26 @@ const RegisterForm = () => {
   const router = useRouter();
   const { registerUser } = useAuth();
 
+  const [preview, setPreview] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<Inputs>({
     defaultValues: {
       role: "" as "user" | "organizer",
     },
   });
+
+  const selectedImage = watch("image");
+  React.useEffect(() => {
+    if (selectedImage && selectedImage[0]) {
+      const url = URL.createObjectURL(selectedImage[0]);
+      setPreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [selectedImage]);
 
   const handleRegister = async (data: Inputs): Promise<void> => {
     const { name, email, role, password, image } = data;
@@ -88,13 +99,17 @@ const RegisterForm = () => {
           </label>
           <label
             htmlFor="file"
-            className="mt-1 flex h-28 w-28 cursor-pointer items-center justify-center rounded-full border-2 border-dashed border-primary/70 bg-secondary/20 text-center text-sm font-medium text-base-content transition hover:border-primary hover:bg-secondary/30"
+            className="mt-1 flex h-28 w-28 cursor-pointer items-center justify-center rounded-full border-2 border-dashed border-primary/70 bg-secondary/20 text-center text-sm font-medium text-base-content transition hover:border-primary hover:bg-secondary/30 overflow-hidden"
           >
-            <span className="px-4 leading-tight">
-              Add
-              <br />
-              Photo
-            </span>
+            {preview ? (
+              <img src={preview} alt="Profile" className="h-full w-full object-cover" />
+            ) : (
+              <span className="px-4 leading-tight">
+                Add
+                <br />
+                Photo
+              </span>
+            )}
           </label>
           <input
             className="hidden"

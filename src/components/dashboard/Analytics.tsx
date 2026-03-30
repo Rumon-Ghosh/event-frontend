@@ -142,7 +142,7 @@ const Analytics = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.08} />
               <XAxis dataKey="month" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `$${v}`} />
-              <Tooltip formatter={(v: number) => [`$${v.toFixed(2)}`, "Revenue"]} />
+              <Tooltip formatter={(v: any) => [`$${Number(v || 0).toFixed(2)}`, "Revenue"]} />
               <Line
                 type="monotone"
                 dataKey="revenue"
@@ -187,8 +187,8 @@ const Analytics = () => {
                   cx="50%"
                   cy="50%"
                   outerRadius={90}
-                  label={({ status, percent }) =>
-                    `${status} (${(percent * 100).toFixed(0)}%)`
+                  label={({ status, percent }: any) =>
+                    `${status} (${((percent || 0) * 100).toFixed(0)}%)`
                   }
                   labelLine={false}
                 >
@@ -199,7 +199,7 @@ const Analytics = () => {
                     />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v: number) => [v, "Orders"]} />
+                <Tooltip formatter={(v: any) => [v, "Orders"]} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
@@ -225,7 +225,7 @@ const Analytics = () => {
                   dataKey="title"
                   tick={{ fontSize: 11 }}
                   width={120}
-                  tickFormatter={(t: string) => (t.length > 16 ? t.slice(0, 15) + "…" : t)}
+                  tickFormatter={(t: any) => (String(t).length > 16 ? String(t).slice(0, 15) + "…" : String(t))}
                 />
                 <Tooltip />
                 <Bar dataKey="bookings" fill="#f59e0b" radius={[0, 6, 6, 0]} />

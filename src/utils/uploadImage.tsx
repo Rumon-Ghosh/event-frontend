@@ -8,21 +8,23 @@ const uploadImage = async (imageFile: File): Promise<string | null> => {
   formData.append("image", imageFile);
 
   try {
-    const uploadUrl = new URL("upload", baseURL).toString();
+    // Normalize baseURL and ensure it doesn't cause segments replacement
+    const cleanBaseURL = baseURL.endsWith("/") ? baseURL : `${baseURL}/`;
+    const uploadUrl = `${cleanBaseURL}upload`;
+    console.log("Current Upload URL:", uploadUrl);
+
     const response = await axios.post(uploadUrl, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
       withCredentials: true,
     });
 
     if (response.data.success) {
       return response.data.data.url;
     }
-    return null;
-  } catch (error) {
-    console.error("Image upload failed", error);
-    return null;
+    throw new Error(response.data.message || "Failed to upload image");
+  } catch (error: any) {
+    const errorMsg = error?.response?.data?.error || error?.response?.data?.message || error.message || "Image upload failed";
+    console.error("Image upload failed", errorMsg);
+    throw new Error(errorMsg);
   }
 };
 

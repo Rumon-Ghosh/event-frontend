@@ -36,8 +36,18 @@ const EventForm = () => {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<EventFormData>();
+
+  const selectedImage = watch("image");
+  React.useEffect(() => {
+    if (selectedImage && selectedImage[0]) {
+      const url = URL.createObjectURL(selectedImage[0]);
+      setPreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [selectedImage]);
 
   const onSubmit = async (data: EventFormData) => {
     const { title, capacity, location, price, description, image, date } = data;
@@ -51,7 +61,6 @@ const EventForm = () => {
     setLoading(true);
     try {
       const uploadedImageUrl = await uploadImage(imageFile);
-      setPreview(uploadedImageUrl); // Set preview to show the uploaded image
       if (!uploadedImageUrl) {
         toast.error("Failed to upload image. Please try again.");
         return;
@@ -65,7 +74,7 @@ const EventForm = () => {
         capacity: Number(capacity),
         image: uploadedImageUrl,
         date: date,
-        createdBy: user?._id || user?.id,
+        createdBy: user?._id,
       };
 
       const res = await axiosSecure.post("/events", payload);

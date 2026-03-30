@@ -45,7 +45,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      const res = await axiosPublic.get("users/me");
+      const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('token='))
+        ?.split('=')[1];
+
+      const res = await axiosPublic.get("users/me", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
 
       if (res.data.success) {
         setUser(res.data.data);
@@ -82,6 +89,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await axiosPublic.post("users/login", data);
 
       if (res.data.success) {
+        // Set a client-side cookie for the middleware (proxy.ts)
+        document.cookie = `token=${res.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax`;
         setUser(res.data.data);
         return res.data;
       }
@@ -99,6 +108,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await axiosPublic.post("users/register", data);
 
       if (res.data.success) {
+        // Set a client-side cookie for the middleware (proxy.ts)
+        document.cookie = `token=${res.data.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax`;
         setUser(res.data.data);
         return res.data;
       }
@@ -113,6 +124,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     try {
       await axiosPublic.post("users/logout");
+      // Clear client-side cookie
+      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       setUser(null);
       router.push("/login");
     } catch (error) {

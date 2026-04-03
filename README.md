@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EventEra - Modern Event Management Platform
 
-## Getting Started
+EventEra is a comprehensive, full-stack event management solution designed to streamline the process of discovering, booking, and managing events. Built with a modern tech stack, it offers a seamless experience for both event organizers and attendees.
 
-First, run the development server:
+**Live URL:** [https://event-era-pearl.vercel.app](https://event-era-pearl.vercel.app)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🌟 Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **User Authentication:** Secure registration and login system using JWT and HTTP-only cookies.
+- **Dynamic Event Discovery:** Browse through a wide variety of events with detailed information and images.
+- **Booking System:** Easy-to-use event booking and order management for users.
+- **AI-Powered Assistant:** Integrated Google Gemini AI to answer user queries and provide event recommendations.
+- **Interactive Dashboards:** 
+  - **User Dashboard:** Manage orders, view booked events, and track history.
+  - **Admin Dashboard:** Full control over users and events, featuring real-time analytics with Recharts.
+- **Event Management:** Organizers can create, update, and delete events with integrated image uploads via Cloudinary.
+- **Premium UI/UX:** Responsive design featuring modern aesthetics, glassmorphism, and smooth animations using Tailwind CSS 4 and Swiper.
+- **Real-time Notifications:** Instant feedback using React Hot Toast and SweetAlert2.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 💻 Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+### Frontend
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router)
+- **Library:** [React 19](https://reactjs.org/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/) & [DaisyUI](https://daisyui.com/)
+- **State Management:** React Hooks & Context API
+- **Form Handling:** React Hook Form
+- **Data Visualization:** Recharts
+- **Animations:** Swiper.js & CSS Transitions
+- **Icons:** React Icons
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Backend
+- **Runtime:** Node.js
+- **Framework:** Express.js
+- **Database:** MongoDB (via Mongoose)
+- **AI Integration:** Google Generative AI (Gemini)
+- **Authentication:** JWT (JSON Web Tokens) & Bcrypt
+- **File Storage:** Cloudinary
+- **Middleware:** Multer, Cookie-parser, CORS
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🚀 Getting Started
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Prerequisites
+- Node.js (Latest LTS)
+- MongoDB Account
+- Cloudinary Account
+- Google Gemini API Key
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## 📸 Project Overview
+
+EventEra provides a centralized platform for the event industry. It allows users to register for events while providing administrators with robust tools to monitor platform growth through visual analytics. The integration of AI ensures that users always have a guiding hand when navigating through complex event details.
+
+---
+

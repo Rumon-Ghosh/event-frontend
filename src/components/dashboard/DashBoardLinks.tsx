@@ -7,6 +7,9 @@ const DashBoardLinks = () => {
   const { user } = useAuth();
   return (
     <>
+      <li>
+        <NavLink href="/dashboard">Overview</NavLink>
+      </li>
       {user?.role === "user" && (
         <>
           <li>
@@ -32,9 +35,6 @@ const DashBoardLinks = () => {
           <li>
             <NavLink href="/dashboard/manage-orders">Manage Orders</NavLink>
           </li>
-          <li>
-        <NavLink href="/dashboard">Overview</NavLink>
-      </li>
         </>
       )}
       <li>
